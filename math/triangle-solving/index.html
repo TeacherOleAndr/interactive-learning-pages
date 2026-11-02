@@ -36,28 +36,46 @@ const safe=(s)=>{const [a,b,c]=s;const margin=1e-10*Math.max(a,b,c);return s.eve
 const fromSides=s=>{const [a,b,c]=s;const A=acos((b*b+c*c-a*a)/(2*b*c)),B=acos((a*a+c*c-b*b)/(2*a*c));return [a,b,c,A,B,180-A-B]};
 function color(i,given,found,target){return target===i?'#d92e41':given.includes(i)?'#176cdb':found.includes(i)?'#168449':'#91a3b7'}
 // Explicit mathematical correspondence: a = BC, b = AC, c = AB.
+// A general scalene triangle: AB, AC and BC have visibly distinct lengths.
+// A = (36,208), B = (302,208), C = (126,28).
+const TRIANGLE_VERTICES=[[36,208],[302,208],[126,28]];
 const TRIANGLE_SIDES=[
- {name:'a',from:1,to:2,label:[249,120]},
- {name:'b',from:0,to:2,label:[93,120]},
- {name:'c',from:0,to:1,label:[168,228]}
+ {name:'a',from:1,to:2,label:[238,112]}, // a = BC
+ {name:'b',from:0,to:2,label:[70,116]},  // b = AC
+ {name:'c',from:0,to:1,label:[169,235]} // c = AB
 ];
-function triangleSVG(given=[],found=[],target=null,interactive=false){
- const coords=[[37,202],[299,202],[168,24]];
- const colorFor=i=>color(i,given,found,target);
- let html='<svg class="drawing" viewBox="0 0 336 260" role="img" aria-label="Трикутник ABC: a = BC, b = AC, c = AB"><polygon points="37,202 299,202 168,24" fill="#b8dcff" fill-opacity=".10" stroke="#d7e2ef"/>';
- TRIANGLE_SIDES.forEach((edge,i)=>{
- const a=coords[edge.from],b=coords[edge.to],tap=interactive?' data-target="'+i+'" class="touch"':'';
- html+='<line x1="'+a[0]+'" y1="'+a[1]+'" x2="'+b[0]+'" y2="'+b[1]+'" stroke="'+colorFor(i)+'" stroke-width="5" stroke-linecap="round"/>';
- if(interactive)html+='<line'+tap+' x1="'+a[0]+'" y1="'+a[1]+'" x2="'+b[0]+'" y2="'+b[1]+'" stroke="transparent" stroke-width="21" role="button" aria-label="Обрати сторону '+edge.name+'" tabindex="0"/>';
+function angleArc(vertexIndex,radius){
+ const origin=TRIANGLE_VERTICES[vertexIndex];
+ const neighbors=[0,1,2].filter(i=>i!==vertexIndex);
+ const unit=neighbors.map(i=>{
+  const dx=TRIANGLE_VERTICES[i][0]-origin[0],dy=TRIANGLE_VERTICES[i][1]-origin[1];
+  const len=Math.hypot(dx,dy);
+  return [dx/len,dy/len];
  });
- const paths=['M65 202 Q63 184 55 178','M271 202 Q274 184 282 178','M151 48 Q168 67 185 48'];
- paths.forEach((d,i)=>html+='<path d="'+d+'" class="angle" stroke="'+colorFor(i+3)+'"/>');
- [[34,224,'A'],[298,224,'B'],[168,15,'C']].forEach(([x,y,t])=>html+='<text x="'+x+'" y="'+y+'" text-anchor="middle" fill="#172b48" font-size="15">'+t+'</text>');
- const positions=[...TRIANGLE_SIDES.map(edge=>edge.label),[80,190],[258,190],[168,83]];
+ const cross=unit[0][0]*unit[1][1]-unit[0][1]*unit[1][0];
+ const p=unit.map(v=>[origin[0]+radius*v[0],origin[1]+radius*v[1]]);
+ return 'M'+p[0][0].toFixed(2)+' '+p[0][1].toFixed(2)+
+        ' A'+radius+' '+radius+' 0 0 '+(cross>0?1:0)+' '+p[1][0].toFixed(2)+' '+p[1][1].toFixed(2);
+}
+function triangleSVG(given=[],found=[],target=null,interactive=false){
+ const coords=TRIANGLE_VERTICES;
+ const colorFor=i=>color(i,given,found,target);
+ let html='<svg class="drawing" viewBox="0 0 336 260" role="img" aria-label="Різносторонній трикутник ABC: a = BC, b = AC, c = AB; α — одна дуга, β — дві, γ — три"><polygon points="'+coords.map(x=>x.join(',')).join(' ')+'" fill="#b8dcff" fill-opacity=".10" stroke="#d7e2ef"/>';
+ TRIANGLE_SIDES.forEach((edge,i)=>{
+  const a=coords[edge.from],b=coords[edge.to],tap=interactive?' data-target="'+i+'" class="touch"':'';
+  html+='<line x1="'+a[0]+'" y1="'+a[1]+'" x2="'+b[0]+'" y2="'+b[1]+'" stroke="'+colorFor(i)+'" stroke-width="5" stroke-linecap="round"/>';
+  if(interactive)html+='<line'+tap+' x1="'+a[0]+'" y1="'+a[1]+'" x2="'+b[0]+'" y2="'+b[1]+'" stroke="transparent" stroke-width="21" role="button" aria-label="Обрати сторону '+edge.name+'" tabindex="0"/>';
+ });
+ // One arc for alpha at A, two for beta at B, three for gamma at C.
+ [1,2,3].forEach((count,i)=>{
+  for(let n=0;n<count;n++)html+='<path d="'+angleArc(i,17+7*n)+'" class="angle" stroke="'+colorFor(i+3)+'"/>';
+ });
+ [[33,230,'A'],[304,230,'B'],[126,17,'C']].forEach(([x,y,t])=>html+='<text x="'+x+'" y="'+y+'" text-anchor="middle" fill="#172b48" font-size="15">'+t+'</text>');
+ const positions=[...TRIANGLE_SIDES.map(edge=>edge.label),[80,194],[258,195],[128,92]];
  names.forEach((name,i)=>{
- const [x,y]=positions[i],tap=interactive?' tabindex="0" role="button" aria-label="Обрати '+name+'" data-target="'+i+'" class="touch"':'';
- html+='<text'+tap+' x="'+x+'" y="'+y+'" text-anchor="middle" fill="'+colorFor(i)+'" font-size="19" font-weight="750">'+name+'</text>';
- if(interactive)html+='<circle data-target="'+i+'" class="touch" cx="'+x+'" cy="'+(y-6)+'" r="19" fill="transparent"/>';
+  const [x,y]=positions[i],tap=interactive?' tabindex="0" role="button" aria-label="Обрати '+name+'" data-target="'+i+'" class="touch"':'';
+  html+='<text'+tap+' x="'+x+'" y="'+y+'" text-anchor="middle" fill="'+colorFor(i)+'" font-size="19" font-weight="750">'+name+'</text>';
+  if(interactive)html+='<circle data-target="'+i+'" class="touch" cx="'+x+'" cy="'+(y-6)+'" r="19" fill="transparent"/>';
  });
  return html+'</svg>';
 }
