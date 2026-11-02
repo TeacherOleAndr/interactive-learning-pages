@@ -39,7 +39,7 @@ function triangleSVG(given=[],found=[],target=null,interactive=false,onclick=nul
  const lines=[[0,1],[0,2],[1,2]],edgePositions=[[168,226],[93,120],[249,120]],arcPos=[[91,177],[246,177],[168,74]];
  const coords=[[37,202],[299,202],[168,24]];
  let html='<svg class="drawing" viewBox="0 0 336 260" role="img" aria-label="Трикутник ABC: кольори відомих, знайдених та шуканого елементів"><polygon points="37,202 299,202 168,24" fill="#b8dcff" fill-opacity=".10" stroke="#d7e2ef" stroke-width="1"/>';
- [[0,2,0],[1,2,1],[0,1,2]].forEach(([i,j,k])=>{html+='<line class="edge" x1="'+coords[i][0]+'" y1="'+coords[i][1]+'" x2="'+coords[j][0]+'" y2="'+coords[j][1]+'" stroke="'+color(k,given,found,target)+'"/>'});
+ [[1,2,0],[0,2,1],[0,1,2]].forEach(([i,j,k])=>{html+='<line class="edge" x1="'+coords[i][0]+'" y1="'+coords[i][1]+'" x2="'+coords[j][0]+'" y2="'+coords[j][1]+'" stroke="'+color(k,given,found,target)+'"/>'});
  const paths=['M65 202 Q63 184 55 178','M271 202 Q274 184 282 178','M151 48 Q168 67 185 48'];
  paths.forEach((d,i)=>html+='<path class="angle" d="'+d+'" stroke="'+color(i+3,given,found,target)+'"/>');
  [[34,224,'A'],[298,224,'B'],[168,15,'C']].forEach(([x,y,t])=>html+='<text x="'+x+'" y="'+y+'" text-anchor="middle" fill="#172b48" font-size="15">'+t+'</text>');
@@ -148,7 +148,7 @@ function triangleValidPartial(state,base,target,val){
  let knownAngles=v.slice(3).filter(x=>x!==null),sum=knownAngles.reduce((a,b)=>a+b,0);
  if(sum>180+1e-7||knownAngles.length<3&&sum>=180-1e-8||knownAngles.length===3&&!eq(sum,180))return false;
  if(v.slice(0,3).every(x=>x!==null)&&!safe(v.slice(0,3)))return false;
- // Retain the branch consistent with the task's actual triangle geometry.
+ // Any solution consistent with the given values and all committed steps is valid.
  return eq(val,base[target]);
 }
 function formulaDescription(step){
@@ -200,7 +200,7 @@ const examples=[
 ];
 let task=null,selectedTarget=null,selectedMethod=null,selectedPair=null,history=[],taskNumber=0,branchChoice=null;
 function newTask(reuse=false){
- if(!reuse){const source=examples[taskNumber++%examples.length];const sides=source.values.map(x=>x*(0.75+Math.random()*0.55));task={type:source.type,given:source.given,base:complete(sides),initial:[],state:[]};
+ if(!reuse){const source=examples[taskNumber++%examples.length];const multiplier=0.8+Math.random()*0.5;const sides=source.values.map(x=>x*multiplier*(0.98+Math.random()*0.04));task={type:source.type,given:source.given,base:complete(sides),initial:[],state:[]};
  task.initial=task.base.map((v,i)=>task.given.includes(i)?v:null)}
  task.state=task.initial.slice();history=[];selectedTarget=null;selectedMethod=null;selectedPair=null;branchChoice=null;renderPractice();
 }
@@ -236,9 +236,10 @@ q('checkStep').onclick=()=>{
  const eligible=optionsForSelected().some(o=>o.method===selectedMethod&&(o.method!=='sine'||o.pair===selectedPair));
  if(!eligible)return message('Цим методом поки не можна знайти обраний елемент: у формулі бракує відомих величин. Спробуй інший крок.');
  const alternatives=infer(task.state,selectedTarget,selectedMethod,selectedPair);
- const correct=alternatives.find(a=>triangleValidPartial(task.state,task.base,selectedTarget,a.value));
+ const branches=solveAll(task.initial).ans.filter(candidate=>task.state.every((v,i)=>v===null||eq(v,candidate[i])));
+ const correct=alternatives.find(a=>branches.some(candidate=>triangleValidPartial(task.state,candidate,selectedTarget,a.value)));
  if(!correct){
- if(alternatives.length>1&&alternatives.some(a=>a.value>0))return message('Теорема синусів дає неоднозначний кут. У цій вправі потрібно врахувати альтернативну гілку; спробуй інший доступний шлях або нову задачу.');
+ if(alternatives.length>1&&alternatives.some(a=>a.value>0))return message('Жодна гілка цього кута не узгоджується з уже знайденими величинами.');
  return message('Ця формула не дає допустимого значення для заданого трикутника. Перевір інший метод.');
  }
  history.push({target:selectedTarget,value:correct.value,expr:correct.expr,method:selectedMethod});
