@@ -1,24 +1,258 @@
-<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Розв’язування трикутників</title><style>
-*{box-sizing:border-box}body{margin:0;background:#f6faff;color:#192b42;font:16px/1.5 system-ui}.wrap{max-width:1080px;margin:auto;padding:25px 18px 70px}h1,h2,h3{color:#10275d}h1{font-size:clamp(30px,4vw,44px);margin:12px 0}.muted{color:#61738a}.layout{display:grid;grid-template-columns:minmax(300px,390px) 1fr;gap:18px}.panel{background:white;border:1px solid #dce8f0;border-radius:18px;padding:20px;box-shadow:0 7px 20px #10275d0a}.inputs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}label{font-size:14px;font-weight:650}input{width:100%;margin-top:6px;padding:10px;border:1px solid #becedc;border-radius:9px;font:16px system-ui}.buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}button{padding:11px 15px;border:0;border-radius:10px;background:#1267b2;color:white;font-weight:700;cursor:pointer}button.alt{background:#e7f2fb;color:#1c486f}.hint{font-size:14px;background:#eaf5ff;border-radius:10px;padding:13px;margin-top:18px}.error{color:#b42318}.ok{color:#08724b}.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.tile{padding:10px;background:#eff7fc;border-radius:10px;text-align:center}.tile b{display:block;font-size:18px}svg{width:100%;max-height:310px}article+article{border-top:1px solid #cddce8;margin-top:20px;padding-top:12px}li{margin:8px 0}@media(max-width:800px){.layout{grid-template-columns:1fr}}
-</style></head><body><main class="wrap"><a href="../../">← Усі навчальні модулі</a><h1>Розв’язування трикутників</h1><p class="muted">Введи рівно три відомі елементи (хоча б одну сторону). Отримай усі кути, сторони, креслення та пояснення.</p><div class="layout"><section class="panel"><h2>Відомі елементи</h2><p class="muted">Вершини трикутника — A, B, C; довжини протилежних сторін — a, b, c; величини кутів при цих вершинах — α, β, γ відповідно.</p><div class="inputs"><label>Сторона a<input id="a" type="number" step="any" placeholder="—"></label><label>Сторона b<input id="b" type="number" step="any" placeholder="—"></label><label>Сторона c<input id="c" type="number" step="any" placeholder="—"></label><label>Кут α, °<input id="A" type="number" step="any" placeholder="—"></label><label>Кут β, °<input id="B" type="number" step="any" placeholder="—"></label><label>Кут γ, °<input id="C" type="number" step="any" placeholder="—"></label></div><div class="buttons"><button id="solve">Розв’язати</button><button id="example" class="alt">Приклад</button><button id="clear" class="alt">Очистити</button></div><p id="status" role="status"></p><div class="hint"><b>Українські скорочення:</b> С — сторона, К — кут.<p><b>ССС</b> — три сторони; <b>СКС</b> — дві сторони та кут між ними; <b>КСК</b> — сторона та два прилеглі кути; <b>ККС</b> — два кути й сторона; <b>ССК</b> — дві сторони й кут не між ними (можливі два розв’язки).</p></div></section><section class="panel"><h2>Результат</h2><div id="results" class="muted">Введи дані та натисни «Розв’язати».</div></section></div></main><script>
-const ids=['a','b','c','A','B','C'],angleNames=['α','β','γ'],rad=Math.PI/180,deg=180/Math.PI,pretty=x=>Number(x.toFixed(5)).toLocaleString('uk-UA',{maximumFractionDigits:5});
-const arc=x=>Math.acos(Math.max(-1,Math.min(1,x)))*deg;
-const full=s=>{let [a,b,c]=s;let A=arc((b*b+c*c-a*a)/(2*b*c)),B=arc((a*a+c*c-b*b)/(2*a*c));return{s:s.slice(),ang:[A,B,180-A-B]}};
-function calculate(g){
- let s=g.slice(0,3),ang=g.slice(3),si=[0,1,2].filter(i=>s[i]!==null),ai=[0,1,2].filter(i=>ang[i]!==null),sol=[],type='',steps=[];
- if(si.length+ai.length!==3||si.length<1)throw Error('Потрібно ввести рівно три відомі елементи, зокрема хоча б одну сторону.');
- if(si.length===3){type='ССС — три сторони';steps=['Перевіряємо нерівності трикутника.','За теоремою косинусів: cos α = (b² + c² − a²)/(2bc). Аналогічно визначаємо кут β.','Обчислюємо γ = 180° − α − β.'];sol=[full(s)]}
- else if(ai.length===2){let m=[0,1,2].find(i=>ang[i]===null),k=si[0];ang[m]=180-ang.filter(x=>x!==null).reduce((x,y)=>x+y,0);type=k===m?'КСК — сторона та два прилеглі кути':'ККС — два кути та сторона';steps=['Знаходимо третій кут: '+angleNames[m]+' = '+pretty(ang[m])+'°.','Користуємося теоремою синусів: a/sin α = b/sin β = c/sin γ.','Обчислюємо невідомі сторони.'];let ans=ang.map(A=>s[k]*Math.sin(A*rad)/Math.sin(ang[k]*rad));sol=[{s:ans,ang}]}
- else {let k=ai[0],m=[0,1,2].find(i=>s[i]===null),j=si.find(i=>i!==k);
- if(m===k){type='СКС — дві сторони та кут між ними';let [i,j]=si;s[k]=Math.sqrt(s[i]**2+s[j]**2-2*s[i]*s[j]*Math.cos(ang[k]*rad));steps=['За теоремою косинусів: '+ids[k]+'² = '+ids[i]+'² + '+ids[j]+'² − 2·'+ids[i]+'·'+ids[j]+'·cos '+angleNames[k]+'.','Отримуємо '+ids[k]+' = '+pretty(s[k])+'.','Решту кутів знаходимо за теоремою косинусів.'];sol=[full(s)]}
- else{type='ССК — дві сторони та кут не між ними';let q=s[j]*Math.sin(ang[k]*rad)/s[k];steps=['За теоремою синусів: sin '+angleNames[j]+' = '+ids[j]+'·sin '+angleNames[k]+'/'+ids[k]+' = '+pretty(q)+'.','Розглядаємо обидва можливі значення кута: θ та 180° − θ.','Знаходимо третій кут і сторону за теоремою синусів.'];if(q>=0&&q<=1+1e-12){let v=Math.asin(Math.min(1,q))*deg;for(let value of [v,180-v]){let A=ang.slice();A[j]=value;A[m]=180-A[k]-A[j];if(A[m]>0){let S=s.slice();S[m]=S[k]*Math.sin(A[m]*rad)/Math.sin(A[k]*rad);sol.push({s:S,ang:A})}}}}
- }
- sol=sol.filter(t=>{let [a,b,c]=t.s,eps=1e-10*Math.max(a,b,c);return t.s.every(x=>Number.isFinite(x)&&x>0)&&a+b>c+eps&&a+c>b+eps&&b+c>a+eps&&t.ang.every(x=>Number.isFinite(x)&&x>0&&x<180)}).filter((t,i,arr)=>arr.findIndex(v=>Math.abs(t.ang[0]-v.ang[0])<1e-7&&Math.abs(t.ang[1]-v.ang[1])<1e-7)===i);
- return{type,steps,sol};
+<!doctype html>
+<html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Розв’язування трикутників — теорія, розв’язувач і самоперевірка</title>
+<style>
+:root{--ink:#172b48;--muted:#5e7189;--blue:#176cdb;--red:#d92e41;--green:#168449;--line:#dce8f4;--bg:#f5f9ff;--card:#fff}*{box-sizing:border-box}
+html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:var(--bg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1160px;margin:auto;padding:24px 18px 70px}h1,h2,h3{color:#122b5b}h1{font-size:clamp(30px,4vw,45px);margin:14px 0 4px}h2{font-size:clamp(23px,3vw,29px);margin:0 0 8px}h3{font-size:19px;margin:5px 0 12px}p{margin:8px 0 13px}.muted,.note{color:var(--muted)}.note{font-size:14px}.topnav{display:flex;flex-wrap:wrap;gap:9px;margin:20px 0 30px}.topnav a,.casebtn{border:1px solid #cadced;padding:9px 12px;border-radius:10px;text-decoration:none;color:#174f90;background:#fff;font-weight:650}.section{margin-top:35px;scroll-margin-top:12px}.panel{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:20px;box-shadow:0 7px 25px #15375e0a}.columns{display:grid;grid-template-columns:minmax(310px,410px) minmax(0,1fr);gap:17px}.stack{display:grid;gap:15px}.fieldgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}label{display:block;font-weight:650;font-size:14px}input{width:100%;min-width:0;padding:10px;margin-top:6px;font:16px system-ui;color:var(--ink);border:1px solid #bbccdf;border-radius:9px}button{font:inherit;cursor:pointer;border:none;border-radius:10px;padding:10px 13px;background:#176cba;color:white;font-weight:650}button.secondary{background:#e9f3fc;color:#1a4d83}button.outline{background:white;border:1px solid #a9c7e5;color:#1e518a}button:disabled{cursor:not-allowed;opacity:.48}button.active{background:#1b4f93;color:white;border-color:#1b4f93}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #82b6ff;outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:9px;align-items:center}.cases{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0}.caption{font-size:13px;color:var(--muted)}.legend{display:flex;flex-wrap:wrap;gap:17px;font-size:14px;margin:9px 0 16px}.legend span{display:flex;gap:6px;align-items:center}.dot{display:inline-block;width:11px;height:11px;border-radius:50%}.blue{color:var(--blue)}.green{color:var(--green)}.red{color:var(--red)}.surface{background:#f6faff;border:1px solid #e2edf8;border-radius:12px;padding:12px}.drawing{max-width:100%;width:100%;height:auto;max-height:330px;display:block}.drawing text{font-family:system-ui;font-size:18px;font-weight:700}.drawing .edge{stroke-width:4;stroke-linecap:round}.drawing .angle{fill:none;stroke-width:3;stroke-linecap:round}
+.formula{overflow-wrap:anywhere;background:#f0f6ff;padding:12px;border-radius:10px;font-family:"Cambria Math",Georgia,serif;font-size:clamp(16px,2.3vw,20px);line-height:1.7}.formula small{font-family:system-ui;font-size:13px}.stepcard{padding:14px;border:1px solid var(--line);border-radius:12px;background:white}.stepcard+.stepcard{margin-top:11px}.stepnum{display:inline-grid;place-items:center;width:26px;height:26px;background:#e2f0ff;border-radius:100%;font-size:13px;font-weight:750;margin-right:7px}.hint{background:#edf6ff;border-left:4px solid #438bd1;padding:12px;border-radius:8px}.status{min-height:24px;font-size:14px;margin:12px 0}.error{color:#b42318}.success{color:#08734a}.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.tile{text-align:center;padding:11px;background:#f1f7fc;border-radius:10px}.tile b{display:block;font-size:19px}.tile small{color:var(--muted)}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.divider{border-top:1px solid var(--line);padding-top:15px;margin-top:15px}.choice{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 13px}.choice button{font-size:14px}.log{counter-reset:steps;min-height:70px}.logline{padding:12px;border-bottom:1px dashed var(--line)}.logline .formula{margin-top:7px}.three{display:grid;grid-template-columns:1fr 1fr;gap:13px}.badge{display:inline-block;border-radius:99px;background:#e5f2fd;color:#154e88;padding:3px 9px;font-size:13px;font-weight:700}.mode{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}select{font:inherit;padding:9px;border-radius:9px;border:1px solid #bfd1e2;background:white;max-width:100%}.touch{cursor:pointer}.touch:focus{outline:none;filter:drop-shadow(0 0 3px #ffb347)}.touch:hover{filter:drop-shadow(0 0 3px #ff9a5b)}
+@media(max-width:810px){.columns,.three{grid-template-columns:1fr}}@media(max-width:450px){.panel{padding:14px}.fieldgrid{gap:7px}.choice button{padding:9px 10px}.tiles{gap:6px}.tile{padding:8px}}
+</style></head>
+<body><main>
+<a href="../../">← До каталогу навчальних модулів</a>
+<h1>Розв’язування трикутників</h1>
+<p class="muted">Теорія з формальними виведеннями · розв’язувач з числовими прикладами · тренажер побудови алгоритму</p>
+<div class="topnav"><a href="#theory">1. Теорія</a><a href="#calculator">2. Розв’язувач</a><a href="#practice">3. Самоперевірка</a></div>
+<div class="legend"><span><i class="dot" style="background:var(--blue)"></i> Синій — дано</span><span><i class="dot" style="background:var(--red)"></i> Червоний — шукаємо зараз</span><span><i class="dot" style="background:var(--green)"></i> Зелений — уже знайдено</span></div>
+<p class="note">Вершини — A, B, C. Довжини протилежних сторін — a, b, c. Величини кутів — α, β, γ. У формулах загального вигляду використовується знак «=», у числових наближеннях — «≈» з округленням до сотих. Проміжні обчислення не округлюються.</p>
+<section class="section" id="theory"><h2>1. Теоретичні алгоритми</h2><p class="muted">Обери випадок. На кожному кроці червоним показано шуканий елемент, зеленим — результати попередніх кроків. Деякі алгоритми мають рівноправні альтернативи.</p>
+<div class="panel"><div id="caseButtons" class="cases"></div><div class="columns"><div><div class="surface" id="theoryDrawing"></div><p id="theoryGiven" class="note"></p><div class="row"><button id="theoryPrev" class="secondary">← Попередній</button><span id="theoryPosition" class="badge"></span><button id="theoryNext">Наступний →</button></div></div><div><h3 id="theoryTitle"></h3><div id="theorySteps"></div><div id="theoryAlternatives" class="hint"></div></div></div></div></section>
+<section class="section" id="calculator"><h2>2. Числовий розв’язувач</h2><p class="muted">Введи рівно три відомі елементи, серед яких є хоча б одна сторона. Програма визначить випадок, обчислить розв’язок і покаже формули.</p>
+<div class="columns"><div class="panel"><div class="fieldgrid"><label>Сторона a<input id="a" type="number" step="any" placeholder="—"></label><label>Сторона b<input id="b" type="number" step="any" placeholder="—"></label><label>Сторона c<input id="c" type="number" step="any" placeholder="—"></label><label>Кут α, °<input id="alpha" type="number" step="any" placeholder="—"></label><label>Кут β, °<input id="beta" type="number" step="any" placeholder="—"></label><label>Кут γ, °<input id="gamma" type="number" step="any" placeholder="—"></label></div><div class="actions"><button id="solve">Розв’язати</button><button id="example" class="secondary">Приклад ССК</button><button id="clear" class="secondary">Очистити</button></div><div id="calcStatus" class="status" role="status"></div><p class="note">ССК (дві сторони та кут не між ними) іноді допускає два розв’язки. Обидва будуть показані.</p></div><div class="panel" id="calcOutput"><p class="muted">Результат з’явиться після введення даних.</p></div></div></section>
+<section class="section" id="practice"><h2>3. Самоперевірка: побудуй алгоритм</h2><p class="muted">Отримай трикутник, обери елемент, який хочеш знайти, а потім математичний метод. Після правильного кроку формула додається до розв’язання. Різні коректні послідовності зараховуються.</p>
+<div class="panel"><div class="row"><button id="newTask">Новий трикутник</button><button id="restartTask" class="secondary">Почати цю задачу знову</button><label style="margin-left:auto">Режим <select id="mode"><option value="learn">Навчання</option><option value="check" selected>Самоперевірка</option><option value="exam">Самостійна робота</option></select></label></div><p class="note" id="taskDescription"></p>
+<div class="columns"><div><div class="surface" id="practiceDrawing"></div><p class="note">Обирай шуканий елемент кнопками нижче. Також можна натискати на підписи безпосередньо на кресленні.</p><b>Що знаходимо?</b><div id="targetButtons" class="choice"></div><b>Яким способом?</b><div id="methodButtons" class="choice"><button data-method="sum">Сума кутів</button><button data-method="sine">Теорема синусів</button><button data-method="cosine">Теорема косинусів</button></div><div id="pairBox"></div><div class="actions"><button id="checkStep">Підтвердити крок</button><button id="undoStep" class="secondary">Скасувати останній крок</button><button id="hintButton" class="secondary">Підказка</button></div><div id="practiceStatus" class="status" role="status"></div></div><div><h3>Мій розв’язок</h3><div id="practiceLog" class="log"></div><div id="practiceOutcome" class="hint" hidden></div></div></div></div></section>
+</main><script>
+'use strict';
+const side=['a','b','c'],angle=['α','β','γ'],names=[...side,...angle],R=Math.PI/180,D=180/Math.PI,rad=x=>x*R;
+const f=x=>Number(x).toLocaleString('uk-UA',{minimumFractionDigits:2,maximumFractionDigits:2});
+const eq=(x,y)=>Math.abs(x-y)<1e-7*Math.max(1,Math.abs(x),Math.abs(y));
+const acos=x=>Math.acos(Math.max(-1,Math.min(1,x)))*D;
+const other=i=>[0,1,2].filter(j=>j!==i);
+const intersection=(arr,ids)=>ids.every(i=>arr[i]!==null);
+const contains=(obj,i)=>obj[i]!==null&&Number.isFinite(obj[i]);
+const safe=(s)=>{const [a,b,c]=s;const margin=1e-10*Math.max(a,b,c);return s.every(x=>x>0&&Number.isFinite(x))&&a+b>c+margin&&a+c>b+margin&&b+c>a+margin};
+const fromSides=s=>{const [a,b,c]=s;const A=acos((b*b+c*c-a*a)/(2*b*c)),B=acos((a*a+c*c-b*b)/(2*a*c));return [a,b,c,A,B,180-A-B]};
+function color(i,given,found,target){return target===i?'#d92e41':given.includes(i)?'#176cdb':found.includes(i)?'#168449':'#91a3b7'}
+function triangleSVG(given=[],found=[],target=null,interactive=false,onclick=null){
+ const lines=[[0,1],[0,2],[1,2]],edgePositions=[[168,226],[93,120],[249,120]],arcPos=[[91,177],[246,177],[168,74]];
+ const coords=[[37,202],[299,202],[168,24]];
+ let html='<svg class="drawing" viewBox="0 0 336 260" role="img" aria-label="Трикутник ABC: кольори відомих, знайдених та шуканого елементів"><polygon points="37,202 299,202 168,24" fill="#b8dcff" fill-opacity=".10" stroke="#d7e2ef" stroke-width="1"/>';
+ [[0,2,0],[1,2,1],[0,1,2]].forEach(([i,j,k])=>{html+='<line class="edge" x1="'+coords[i][0]+'" y1="'+coords[i][1]+'" x2="'+coords[j][0]+'" y2="'+coords[j][1]+'" stroke="'+color(k,given,found,target)+'"/>'});
+ const paths=['M65 202 Q63 184 55 178','M271 202 Q274 184 282 178','M151 48 Q168 67 185 48'];
+ paths.forEach((d,i)=>html+='<path class="angle" d="'+d+'" stroke="'+color(i+3,given,found,target)+'"/>');
+ [[34,224,'A'],[298,224,'B'],[168,15,'C']].forEach(([x,y,t])=>html+='<text x="'+x+'" y="'+y+'" text-anchor="middle" fill="#172b48" font-size="15">'+t+'</text>');
+ const pos=[[249,120],[93,120],[168,228],[80,190],[258,190],[168,83]];
+ names.forEach((name,i)=>{const p=pos[i],enable=interactive?' tabindex="0" role="button" aria-label="Обрати '+name+'" data-target="'+i+'" class="touch"':'';
+ html+='<text'+enable+' x="'+p[0]+'" y="'+p[1]+'" text-anchor="middle" fill="'+color(i,given,found,target)+'" font-size="19" font-weight="750">'+name+'</text>';
+ if(interactive)html+='<circle data-target="'+i+'" class="touch" cx="'+p[0]+'" cy="'+(p[1]-6)+'" r="22" fill="transparent"/>';
+ });
+ return html+'</svg>';
 }
-function draw(t){let [a,b,c]=t.s,x=(b*b+c*c-a*a)/(2*c),y=Math.sqrt(Math.max(0,b*b-x*x));let p=[[0,0],[c,0],[x,y]],lo=Math.min(0,x),hi=Math.max(c,x),factor=Math.min(320/(hi-lo||1),210/(y||1));let xy=([u,v])=>[50+(u-lo)*factor,245-v*factor];let [A,B,C]=p.map(xy),point=v=>v.join(','),mid=(u,v)=>[(u[0]+v[0])/2,(u[1]+v[1])/2],label=(q,t,dx,dy)=>'<text x="'+(q[0]+dx)+'" y="'+(q[1]+dy)+'" font-size="17" fill="#123c64" font-weight="700">'+t+'</text>';return '<svg viewBox="0 0 430 285" role="img" aria-label="Креслення трикутника ABC"><polygon points="'+[A,B,C].map(point).join(' ')+'" fill="#deeffc" stroke="#1267b2" stroke-width="3"/>'+label(A,'A',-17,20)+label(B,'B',10,20)+label(C,'C',0,-12)+label(mid(B,C),'a',8,0)+label(mid(A,C),'b',-17,0)+label(mid(A,B),'c',0,20)+'</svg>'}
-function render(t,i,steps){let [a,b,c]=t.s,p=a+b+c,h=p/2,area=Math.sqrt(Math.max(0,h*(h-a)*(h-b)*(h-c)));let tiles=ids.map((id,k)=>'<div class="tile"><small>'+(k<3?id:angleNames[k-3])+'</small><b>'+pretty(k<3?t.s[k]:t.ang[k-3])+(k>=3?'°':'')+'</b></div>').join('');return '<article><h3>Розв’язок '+(i+1)+'</h3>'+draw(t)+'<div class="tiles">'+tiles+'</div><p><b>Периметр:</b> '+pretty(p)+'; <b>площа:</b> '+pretty(area)+'</p><details open><summary><b>Покрокове пояснення</b></summary><ol>'+steps.map(s=>'<li>'+s+'</li>').join('')+'</ol><p>Перевірка: α + β + γ = 180°.</p></details></article>'}
-document.getElementById('solve').onclick=()=>{let state=document.getElementById('status'),out=document.getElementById('results');state.textContent='';state.className='';try{let g=ids.map(id=>{let s=document.getElementById(id).value.trim().replace(',','.');return s===''?null:Number(s)});if(g.some(v=>v!==null&&!Number.isFinite(v)))throw Error('Введи коректні числові значення.');if(g.slice(0,3).some(v=>v!==null&&v<=0))throw Error('Довжини сторін мають бути додатними.');if(g.slice(3).some(v=>v!==null&&(v<=0||v>=180)))throw Error('Кут має бути між 0° та 180°.');let r=calculate(g);if(!r.sol.length)throw Error('За заданими значеннями трикутник не існує.');out.className='';out.innerHTML='<p><b>Випадок:</b> '+r.type+'. <b>Розв’язків:</b> '+r.sol.length+'.</p>'+r.sol.map((t,i)=>render(t,i,r.steps)).join('');state.className='ok';state.textContent='Обчислення виконано.'}catch(e){state.className='error';state.textContent=e.message;out.className='muted';out.textContent='Перевір вихідні дані та повтори спробу.'}};
-document.getElementById('clear').onclick=()=>{ids.forEach(id=>document.getElementById(id).value='');document.getElementById('status').textContent='';document.getElementById('results').textContent='Введи дані та натисни «Розв’язати».  '};
-document.getElementById('example').onclick=()=>{ids.forEach(id=>document.getElementById(id).value='');document.getElementById('a').value=7;document.getElementById('b').value=10;document.getElementById('A').value=30;document.getElementById('solve').click()};
+const theory=[
+{id:'ССС',title:'Три відомі сторони',given:[0,1,2],steps:[
+ {target:3,formula:'cos α = (b² + c² − a²)/(2bc)',note:'Теорема косинусів визначає величину кута α.'},
+ {target:4,formula:'cos β = (a² + c² − b²)/(2ac)',note:'Знову застосовуємо теорему косинусів.'},
+ {target:5,formula:'γ = 180° − α − β',note:'Властивість суми внутрішніх кутів трикутника.'}],
+ alt:'Кут γ також можна визначити одразу теоремою косинусів. Після знаходження α можна обчислити β через теорему синусів, але треба враховувати можливість другого кута з тим самим синусом; надійніше використати теорему косинусів.'},
+{id:'СКС',title:'Дві сторони та кут між ними',given:[0,1,5],steps:[
+ {target:2,formula:'c = √(a² + b² − 2ab cos γ)',note:'За теоремою косинусів знаходимо третю сторону.'},
+ {target:3,formula:'cos α = (b² + c² − a²)/(2bc)',note:'Після знаходження всіх трьох сторін можемо знайти α.'},
+ {target:4,formula:'β = 180° − α − γ',note:'Завершуємо за сумою кутів.'}],
+ alt:'Після першого кроку α можна знайти також за теоремою синусів: sin α = a sin γ / c. Для вибору кута враховуємо геометричні обмеження; теорема косинусів однозначніша. Інший кут можна знайти теоремою косинусів.'},
+{id:'КСК',title:'Сторона та два прилеглі кути',given:[2,3,4],steps:[
+ {target:5,formula:'γ = 180° − α − β',note:'Знаходимо кут, протилежний відомій стороні c.'},
+ {target:0,formula:'a = c sin α / sin γ',note:'Теорема синусів для пар (a, α) і (c, γ).'},
+ {target:1,formula:'b = c sin β / sin γ',note:'Теорема синусів для пар (b, β) і (c, γ).'}],
+ alt:'На другому кроці можна спочатку знайти b, а потім a. Після визначення a третю сторону також можна отримати за теоремою косинусів: b² = a² + c² − 2ac cos β.'},
+{id:'ККС',title:'Два кути й неприлегла до обох сторона',given:[0,3,4],steps:[
+ {target:5,formula:'γ = 180° − α − β',note:'Знаходимо третій кут.'},
+ {target:1,formula:'b = a sin β / sin α',note:'Теорема синусів для пар (b, β) і (a, α).'},
+ {target:2,formula:'c = a sin γ / sin α',note:'Знаходимо третю сторону теоремою синусів.'}],
+ alt:'Після другого кроку сторону c можна також знайти за теоремою косинусів: c² = a² + b² − 2ab cos γ. Послідовність знаходження b і c можна поміняти місцями.'},
+{id:'ССК',title:'Дві сторони й кут не між ними',given:[0,1,3],steps:[
+ {target:4,formula:'sin β = b sin α / a; β₁ = arcsin(b sin α / a); β₂ = 180° − β₁',note:'Спершу перевіряємо, чи існує кут: 0 < b sin α / a ≤ 1. Можливі один або два допустимі кути.'},
+ {target:5,formula:'γᵢ = 180° − α − βᵢ',note:'Залишаємо лише гілки, для яких γᵢ > 0°.'},
+ {target:2,formula:'cᵢ = a sin γᵢ / sin α',note:'Для кожної допустимої гілки знаходимо третю сторону.'}],
+ alt:'Якщо b sin α / a > 1, розв’язків немає. Кожну допустиму гілку можна продовжити окремо. Альтернатива останньому кроку — теорема косинусів: c² = a² + b² − 2ab cos γ.'}
+];
+let theoryIndex=0,theoryStep=0;
+const q=id=>document.getElementById(id);
+function paintTheory(){
+ const item=theory[theoryIndex],steps=item.steps;
+ q('caseButtons').innerHTML=theory.map((t,i)=>'<button class="'+(i===theoryIndex?'active':'secondary')+'" data-case="'+i+'">'+t.id+'</button>').join('');
+ q('theoryTitle').textContent=item.id+' — '+item.title;
+ q('theoryGiven').innerHTML='<b>Дано:</b> '+item.given.map(i=>names[i]).join(', ')+'.';
+ q('theoryDrawing').innerHTML=triangleSVG(item.given,steps.slice(0,theoryStep).map(t=>t.target),steps[theoryStep].target);
+ q('theoryPosition').textContent='Крок '+(theoryStep+1)+' із '+steps.length;
+ q('theoryPrev').disabled=theoryStep===0;q('theoryNext').disabled=theoryStep===steps.length-1;
+ q('theorySteps').innerHTML=steps.map((s,i)=>'<div class="stepcard" style="opacity:'+(i>theoryStep?'.55':'1')+'"><span class="stepnum">'+(i+1)+'</span><b>'+(['Знаходимо ','Визначаємо ','Обчислюємо '][Math.min(i,2)])+names[s.target]+'</b>'+(i<=theoryStep?'<div class="formula">'+s.formula+'</div><p class="note">'+s.note+'</p>':'<p class="note">Наступний крок ще не відкрито.</p>')+'</div>').join('');
+ q('theoryAlternatives').innerHTML='<b>Інший правильний шлях:</b> '+item.alt;
+}
+q('caseButtons').addEventListener('click',e=>{const btn=e.target.closest('[data-case]');if(btn){theoryIndex=Number(btn.dataset.case);theoryStep=0;paintTheory()}});
+q('theoryPrev').onclick=()=>{theoryStep=Math.max(0,theoryStep-1);paintTheory()};
+q('theoryNext').onclick=()=>{theoryStep=Math.min(theory[theoryIndex].steps.length-1,theoryStep+1);paintTheory()};
+paintTheory();
+// Numerical solver returns all valid branches for SSA.
+function complete(S){let [a,b,c]=S;let A=acos((b*b+c*c-a*a)/(2*b*c)),B=acos((a*a+c*c-b*b)/(2*a*c));return [a,b,c,A,B,180-A-B]}
+function solveAll(g){
+ const s=g.slice(0,3),A=g.slice(3),si=[0,1,2].filter(i=>s[i]!==null),ai=[0,1,2].filter(i=>A[i]!==null);
+ if(si.length+ai.length!==3||si.length<1)throw Error('Введи рівно три елементи, з яких хоча б один — сторона.');
+ let ans=[],type='';
+ if(si.length===3){type='ССС';if(safe(s))ans=[complete(s)]}
+ else if(ai.length===2){let m=[0,1,2].find(i=>A[i]===null),k=si[0];A[m]=180-A.filter(x=>x!==null).reduce((x,y)=>x+y,0);type=k===m?'КСК':'ККС';if(A.every(x=>x>0&&x<180)){let S=A.map(x=>s[k]*Math.sin(rad(x))/Math.sin(rad(A[k])));ans=[[...S,...A]]}}
+ else {let k=ai[0],m=[0,1,2].find(i=>s[i]===null),j=si.find(i=>i!==k);
+ if(m===k){type='СКС';let [i,j]=si;s[k]=Math.sqrt(Math.max(0,s[i]**2+s[j]**2-2*s[i]*s[j]*Math.cos(rad(A[k]))));if(safe(s))ans=[complete(s)]}
+ else{type='ССК';let ratio=s[j]*Math.sin(rad(A[k]))/s[k];if(ratio>0&&ratio<=1+1e-12){let v=Math.asin(Math.min(1,ratio))*D;for(let possible of [v,180-v]){let ang=A.slice();ang[j]=possible;ang[m]=180-ang[k]-ang[j];if(ang[m]>0){let S=s.slice();S[m]=S[k]*Math.sin(rad(ang[m]))/Math.sin(rad(ang[k]));ans.push([...S,...ang])}}}}}
+ ans=ans.filter(x=>safe(x.slice(0,3))&&x.slice(3).every(t=>t>0&&t<180)).filter((x,i,a)=>a.findIndex(y=>eq(x[3],y[3])&&eq(x[4],y[4]))===i);
+ return {type,ans};
+}
+// A method is valid only if every quantity required on its right-hand side is known.
+function available(state,target){
+ const list=[];if(state[target]!==null)return list;
+ if(target>=3){let i=target-3,j=other(i);if(intersection(state,j.map(k=>k+3)))list.push({method:'sum'});
+ if(intersection(state,[0,1,2]))list.push({method:'cosine'});
+ for(let k of other(i))if(intersection(state,[i,k,k+3]))list.push({method:'sine',pair:k});
+ }else{const j=other(target);if(intersection(state,[j[0],j[1],target+3]))list.push({method:'cosine'});
+ for(let k of other(target))if(intersection(state,[target+3,k,k+3]))list.push({method:'sine',pair:k});
+ }
+ return list;
+}
+function infer(state,target,method,pair=null){
+ const i=target%3,oth=other(i);
+ if(method==='sum'&&target>=3&&intersection(state,oth.map(k=>k+3)))return [{value:180-state[3+oth[0]]-state[3+oth[1]],expr:angle[i]+' = 180° − '+angle[oth[0]]+' − '+angle[oth[1]]}];
+ if(method==='cosine'){
+ if(target<3&&intersection(state,[oth[0],oth[1],i+3])){
+ const a=state[oth[0]],b=state[oth[1]],value=Math.sqrt(Math.max(0,a*a+b*b-2*a*b*Math.cos(rad(state[i+3]))));
+ return [{value,expr:side[i]+' = √('+side[oth[0]]+'² + '+side[oth[1]]+'² − 2·'+side[oth[0]]+'·'+side[oth[1]]+'·cos '+angle[i]+')'}];
+ }
+ if(target>=3&&intersection(state,[0,1,2])){
+ const a=state[oth[0]],b=state[oth[1]],c=state[i];
+ return [{value:acos((a*a+b*b-c*c)/(2*a*b)),expr:angle[i]+' = arccos(('+side[oth[0]]+'² + '+side[oth[1]]+'² − '+side[i]+'²)/(2·'+side[oth[0]]+'·'+side[oth[1]]+'))'}];
+ }}
+ if(method==='sine'&&pair!==null&&pair!==i){
+ if(target<3&&intersection(state,[i+3,pair,pair+3])){
+ return [{value:state[pair]*Math.sin(rad(state[i+3]))/Math.sin(rad(state[pair+3])),expr:side[i]+' = '+side[pair]+' sin '+angle[i]+' / sin '+angle[pair]}];
+ }
+ if(target>=3&&intersection(state,[i,pair,pair+3])){
+ let ratio=state[i]*Math.sin(rad(state[pair+3]))/state[pair];
+ if(ratio>1+1e-10||ratio<=0)return [];
+ const t=Math.asin(Math.min(1,ratio))*D;
+ return [t,180-t].filter((x,k,a)=>x>0&&x<180&&a.findIndex(v=>eq(v,x))===k).map(value=>({value,expr:angle[i]+' = arcsin('+side[i]+' sin '+angle[pair]+' / '+side[pair]+')'+(value>90?' (додатковий кут)':'')}));
+ }}
+ return [];
+}
+function triangleValidPartial(state,base,target,val){
+ const v=state.slice();v[target]=val;if(!Number.isFinite(val)||val<=0||(target>=3&&val>=180))return false;
+ let knownAngles=v.slice(3).filter(x=>x!==null),sum=knownAngles.reduce((a,b)=>a+b,0);
+ if(sum>180+1e-7||knownAngles.length<3&&sum>=180-1e-8||knownAngles.length===3&&!eq(sum,180))return false;
+ if(v.slice(0,3).every(x=>x!==null)&&!safe(v.slice(0,3)))return false;
+ // Retain the branch consistent with the task's actual triangle geometry.
+ return eq(val,base[target]);
+}
+function formulaDescription(step){
+ const approximation=names[step.target]+' ≈ '+f(step.value)+(step.target>=3?'°':'');
+ return '<span>'+step.expr+'</span><br><b>'+approximation+'</b>';
+}
+const getInput=()=>['a','b','c','alpha','beta','gamma'].map(id=>{let val=q(id).value.trim().replace(',','.');return val===''?null:Number(val)});
+function showSolutions(){
+ const status=q('calcStatus');status.textContent='';status.className='status';
+ try{
+ const given=getInput();
+ if(given.some(x=>x!==null&&!Number.isFinite(x)))throw Error('Усі значення мають бути числами.');
+ if(given.slice(0,3).some(x=>x!==null&&x<=0)||given.slice(3).some(x=>x!==null&&(x<=0||x>=180)))throw Error('Сторони мають бути додатними, а кути — між 0° і 180°.');
+ const result=solveAll(given);if(!result.ans.length)throw Error('За цими даними трикутник не існує.');
+ const baseKnown=given.map((x,i)=>x===null?-1:i).filter(i=>i>=0);
+ let html='<p><span class="badge">'+result.type+'</span> Знайдено розв’язків: '+result.ans.length+'</p>';
+ for(let n=0;n<result.ans.length;n++){
+ const solution=result.ans[n],found=solution.map((x,i)=>given[i]===null?i:-1).filter(x=>x>=0),sum=solution.slice(0,3).reduce((x,y)=>x+y,0),semi=sum/2,area=Math.sqrt(Math.max(0,semi*(semi-solution[0])*(semi-solution[1])*(semi-solution[2])));
+ html+='<div class="divider"><h3>Розв’язок '+(n+1)+'</h3><div class="surface">'+triangleSVG(baseKnown,found,null)+'</div><div class="tiles">'+solution.map((value,i)=>'<div class="tile"><small>'+names[i]+'</small><b>'+(given[i]===null?'≈ ':'')+f(value)+(i>=3?'°':'')+'</b></div>').join('')+'</div><p>Периметр ≈ '+f(sum)+'; площа ≈ '+f(area)+'.</p>';
+ // Build a formula sequence from three known quantities, allowing any valid next step.
+ let current=given.slice(),log=[],guard=0;
+ while(current.some(x=>x===null)&&guard++<8){
+ let moved=false;
+ const order=[3,4,5,0,1,2];
+ for(const target of order){if(current[target]!==null)continue;
+ const opts=available(current,target);
+ for(const op of opts){let alternatives=infer(current,target,op.method,op.pair);
+ const foundValue=alternatives.find(z=>triangleValidPartial(current,solution,target,z.value));
+ if(foundValue){log.push({target,expr:foundValue.expr,value:foundValue.value,method:op.method});current[target]=foundValue.value;moved=true;break}}
+ if(moved)break;
+ }if(!moved)break;
+ }
+ html+='<details open><summary><b>Покрокове розв’язання</b></summary><ol>'+log.map(x=>'<li>'+formulaDescription(x)+'</li>').join('')+'</ol><p class="note">Допускаються й інші правильні послідовності. Обчислення виконано без проміжного округлення.</p></details></div>';
+ }
+ q('calcOutput').innerHTML=html;status.textContent='Готово.';status.className='status success';
+ }catch(e){status.textContent=e.message;status.className='status error';q('calcOutput').innerHTML='<p class="muted">Виправ вихідні дані та повтори обчислення.</p>'}
+}
+q('solve').onclick=showSolutions;
+q('clear').onclick=()=>{['a','b','c','alpha','beta','gamma'].forEach(id=>q(id).value='');q('calcStatus').textContent='';q('calcOutput').innerHTML='<p class="muted">Результат з’явиться після введення даних.</p>'};
+q('example').onclick=()=>{q('clear').click();q('a').value='7';q('b').value='10';q('alpha').value='30';showSolutions()};
+// Practice tasks: each task is a geometrically valid triangle, from which exactly three givens are exposed.
+// SSA practice uses the branch of the displayed triangle; ambiguous branches are noted rather than silently judged as errors.
+const examples=[
+ {type:'ССС',given:[0,1,2],values:[7,8,9]},
+ {type:'СКС',given:[0,1,5],values:[8,10,11]},
+ {type:'КСК',given:[2,3,4],values:[8,10,11]},
+ {type:'ККС',given:[0,3,4],values:[7,9,11]},
+ {type:'ССК',given:[0,1,3],values:[7,10,12]}
+];
+let task=null,selectedTarget=null,selectedMethod=null,selectedPair=null,history=[],taskNumber=0,branchChoice=null;
+function newTask(reuse=false){
+ if(!reuse){const source=examples[taskNumber++%examples.length];const sides=source.values.map(x=>x*(0.75+Math.random()*0.55));task={type:source.type,given:source.given,base:complete(sides),initial:[],state:[]};
+ task.initial=task.base.map((v,i)=>task.given.includes(i)?v:null)}
+ task.state=task.initial.slice();history=[];selectedTarget=null;selectedMethod=null;selectedPair=null;branchChoice=null;renderPractice();
+}
+function completed(){return task.state.every(x=>x!==null)}
+function renderPractice(){
+ if(!task)return;
+ const found=names.map((x,i)=>task.state[i]!==null&&!task.given.includes(i)?i:-1).filter(x=>x>=0);
+ q('practiceDrawing').innerHTML=triangleSVG(task.given,found,selectedTarget,true);
+ q('taskDescription').innerHTML='<span class="badge">'+task.type+'</span> <b>Дано:</b> '+task.given.map(i=>names[i]+' = '+f(task.base[i])+(i>=3?'°':'')).join('; ')+'. Визнач усі інші елементи.';
+ q('targetButtons').innerHTML=names.map((name,i)=>'<button class="'+(selectedTarget===i?'active':task.state[i]===null?'outline':'secondary')+'" data-target="'+i+'" '+(task.state[i]!==null?'disabled':'')+'>'+name+'</button>').join('');
+ [...q('methodButtons').querySelectorAll('[data-method]')].forEach(b=>b.className=selectedMethod===b.dataset.method?'active':'outline');
+ let pairHtml='';
+ if(selectedMethod==='sine'&&selectedTarget!==null){pairHtml='<p class="note">Яку відому пару «сторона — протилежний кут» використаєш?</p><div class="choice">'+other(selectedTarget%3).map(i=>'<button class="'+(selectedPair===i?'active':'outline')+'" data-pair="'+i+'">('+side[i]+', '+angle[i]+')</button>').join('')+'</div>'}
+ q('pairBox').innerHTML=pairHtml;
+ const mode=q('mode').value;
+ q('practiceLog').innerHTML=history.map((s,i)=>'<div class="logline"><b>'+(i+1)+'. Знайдено '+names[s.target]+'</b><div class="formula">'+(mode==='exam'?'Спосіб обрано. Формулу буде показано після завершення.':formulaDescription(s))+'</div></div>').join('')+'<div class="logline muted">'+(completed()?'Усі елементи визначено.':(history.length+1)+'. ____________________')+'</div>';
+ q('practiceOutcome').hidden=!completed();
+ if(completed()){q('practiceOutcome').innerHTML='<b>Задачу розв’язано.</b> Правильних кроків: '+history.length+'.'+(mode==='exam'?' <button class="secondary" id="showExam">Показати формули</button>':'');
+ const reveal=q('showExam');if(reveal)reveal.onclick=()=>{q('practiceLog').innerHTML=history.map((s,i)=>'<div class="logline"><b>'+(i+1)+'. '+names[s.target]+'</b><div class="formula">'+formulaDescription(s)+'</div></div>').join('')};}
+ q('undoStep').disabled=history.length===0;q('checkStep').disabled=completed();
+}
+q('targetButtons').addEventListener('click',e=>{const b=e.target.closest('[data-target]');if(b){selectedTarget=Number(b.dataset.target);selectedPair=null;message('');renderPractice()}});
+q('practiceDrawing').addEventListener('click',e=>{const b=e.target.closest('[data-target]');if(b&&task.state[Number(b.dataset.target)]===null){selectedTarget=Number(b.dataset.target);selectedPair=null;message('');renderPractice()}});
+q('practiceDrawing').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.dataset.target!==undefined){e.preventDefault();const i=Number(e.target.dataset.target);if(task.state[i]===null){selectedTarget=i;selectedPair=null;renderPractice()}}});
+q('methodButtons').addEventListener('click',e=>{const b=e.target.closest('[data-method]');if(b){selectedMethod=b.dataset.method;selectedPair=null;message('');renderPractice()}});
+q('pairBox').addEventListener('click',e=>{const b=e.target.closest('[data-pair]');if(b){selectedPair=Number(b.dataset.pair);renderPractice()}});
+function message(t,success=false){q('practiceStatus').textContent=t;q('practiceStatus').className='status '+(success?'success':'error')}
+function optionsForSelected(){return selectedTarget===null?[]:available(task.state,selectedTarget)}
+q('checkStep').onclick=()=>{
+ if(selectedTarget===null)return message('Спочатку обери невідомий елемент.');
+ if(selectedMethod===null)return message('Обери теорему або властивість трикутника.');
+ if(selectedMethod==='sine'&&selectedPair===null)return message('Обери відповідну пару сторони й протилежного кута.');
+ const eligible=optionsForSelected().some(o=>o.method===selectedMethod&&(o.method!=='sine'||o.pair===selectedPair));
+ if(!eligible)return message('Цим методом поки не можна знайти обраний елемент: у формулі бракує відомих величин. Спробуй інший крок.');
+ const alternatives=infer(task.state,selectedTarget,selectedMethod,selectedPair);
+ const correct=alternatives.find(a=>triangleValidPartial(task.state,task.base,selectedTarget,a.value));
+ if(!correct){
+ if(alternatives.length>1&&alternatives.some(a=>a.value>0))return message('Теорема синусів дає неоднозначний кут. У цій вправі потрібно врахувати альтернативну гілку; спробуй інший доступний шлях або нову задачу.');
+ return message('Ця формула не дає допустимого значення для заданого трикутника. Перевір інший метод.');
+ }
+ history.push({target:selectedTarget,value:correct.value,expr:correct.expr,method:selectedMethod});
+ task.state[selectedTarget]=correct.value;selectedTarget=null;selectedPair=null;selectedMethod=null;
+ message(completed()?'Вірно! Усі сторони й кути знайдено.':'Правильно. Новий елемент став зеленим.',true);renderPractice();
+};
+q('undoStep').onclick=()=>{if(history.length){const last=history.pop();task.state[last.target]=null;selectedTarget=last.target;selectedMethod=last.method;selectedPair=null;message('Останній крок скасовано.',true);renderPractice()}};
+q('hintButton').onclick=()=>{
+ if(q('mode').value==='exam')return message('У режимі самостійної роботи підказки вимкнені.');
+ let msg='';for(let i=0;i<6;i++)if(task.state[i]===null){const opts=available(task.state,i);if(opts.length){msg='Можна знайти '+names[i]+' за допомогою '+(opts[0].method==='sum'?'суми кутів':opts[0].method==='sine'?'теореми синусів':'теореми косинусів')+'.';break}}
+ message(msg||'Перевір відомі елементи.');
+};
+q('newTask').onclick=()=>{newTask(false);message('Нова задача сформована.',true)};
+q('restartTask').onclick=()=>{newTask(true);message('Задачу розпочато заново.',true)};
+q('mode').onchange=()=>{renderPractice();message('Режим змінено.',true)};
+newTask(false);
 </script></body></html>
