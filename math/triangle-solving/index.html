@@ -35,18 +35,29 @@ const contains=(obj,i)=>obj[i]!==null&&Number.isFinite(obj[i]);
 const safe=(s)=>{const [a,b,c]=s;const margin=1e-10*Math.max(a,b,c);return s.every(x=>x>0&&Number.isFinite(x))&&a+b>c+margin&&a+c>b+margin&&b+c>a+margin};
 const fromSides=s=>{const [a,b,c]=s;const A=acos((b*b+c*c-a*a)/(2*b*c)),B=acos((a*a+c*c-b*b)/(2*a*c));return [a,b,c,A,B,180-A-B]};
 function color(i,given,found,target){return target===i?'#d92e41':given.includes(i)?'#176cdb':found.includes(i)?'#168449':'#91a3b7'}
-function triangleSVG(given=[],found=[],target=null,interactive=false,onclick=null){
- const lines=[[0,1],[0,2],[1,2]],edgePositions=[[168,226],[93,120],[249,120]],arcPos=[[91,177],[246,177],[168,74]];
+// Explicit mathematical correspondence: a = BC, b = AC, c = AB.
+const TRIANGLE_SIDES=[
+ {name:'a',from:1,to:2,label:[249,120]},
+ {name:'b',from:0,to:2,label:[93,120]},
+ {name:'c',from:0,to:1,label:[168,228]}
+];
+function triangleSVG(given=[],found=[],target=null,interactive=false){
  const coords=[[37,202],[299,202],[168,24]];
- let html='<svg class="drawing" viewBox="0 0 336 260" role="img" aria-label="Трикутник ABC: кольори відомих, знайдених та шуканого елементів"><polygon points="37,202 299,202 168,24" fill="#b8dcff" fill-opacity=".10" stroke="#d7e2ef" stroke-width="1"/>';
- [[1,2,0],[0,2,1],[0,1,2]].forEach(([i,j,k])=>{html+='<line class="edge" x1="'+coords[i][0]+'" y1="'+coords[i][1]+'" x2="'+coords[j][0]+'" y2="'+coords[j][1]+'" stroke="'+color(k,given,found,target)+'"/>'});
+ const colorFor=i=>color(i,given,found,target);
+ let html='<svg class="drawing" viewBox="0 0 336 260" role="img" aria-label="Трикутник ABC: a = BC, b = AC, c = AB"><polygon points="37,202 299,202 168,24" fill="#b8dcff" fill-opacity=".10" stroke="#d7e2ef"/>';
+ TRIANGLE_SIDES.forEach((edge,i)=>{
+ const a=coords[edge.from],b=coords[edge.to],tap=interactive?' data-target="'+i+'" class="touch"':'';
+ html+='<line x1="'+a[0]+'" y1="'+a[1]+'" x2="'+b[0]+'" y2="'+b[1]+'" stroke="'+colorFor(i)+'" stroke-width="5" stroke-linecap="round"/>';
+ if(interactive)html+='<line'+tap+' x1="'+a[0]+'" y1="'+a[1]+'" x2="'+b[0]+'" y2="'+b[1]+'" stroke="transparent" stroke-width="21" role="button" aria-label="Обрати сторону '+edge.name+'" tabindex="0"/>';
+ });
  const paths=['M65 202 Q63 184 55 178','M271 202 Q274 184 282 178','M151 48 Q168 67 185 48'];
- paths.forEach((d,i)=>html+='<path class="angle" d="'+d+'" stroke="'+color(i+3,given,found,target)+'"/>');
+ paths.forEach((d,i)=>html+='<path d="'+d+'" class="angle" stroke="'+colorFor(i+3)+'"/>');
  [[34,224,'A'],[298,224,'B'],[168,15,'C']].forEach(([x,y,t])=>html+='<text x="'+x+'" y="'+y+'" text-anchor="middle" fill="#172b48" font-size="15">'+t+'</text>');
- const pos=[[249,120],[93,120],[168,228],[80,190],[258,190],[168,83]];
- names.forEach((name,i)=>{const p=pos[i],enable=interactive?' tabindex="0" role="button" aria-label="Обрати '+name+'" data-target="'+i+'" class="touch"':'';
- html+='<text'+enable+' x="'+p[0]+'" y="'+p[1]+'" text-anchor="middle" fill="'+color(i,given,found,target)+'" font-size="19" font-weight="750">'+name+'</text>';
- if(interactive)html+='<circle data-target="'+i+'" class="touch" cx="'+p[0]+'" cy="'+(p[1]-6)+'" r="22" fill="transparent"/>';
+ const positions=[...TRIANGLE_SIDES.map(edge=>edge.label),[80,190],[258,190],[168,83]];
+ names.forEach((name,i)=>{
+ const [x,y]=positions[i],tap=interactive?' tabindex="0" role="button" aria-label="Обрати '+name+'" data-target="'+i+'" class="touch"':'';
+ html+='<text'+tap+' x="'+x+'" y="'+y+'" text-anchor="middle" fill="'+colorFor(i)+'" font-size="19" font-weight="750">'+name+'</text>';
+ if(interactive)html+='<circle data-target="'+i+'" class="touch" cx="'+x+'" cy="'+(y-6)+'" r="19" fill="transparent"/>';
  });
  return html+'</svg>';
 }
