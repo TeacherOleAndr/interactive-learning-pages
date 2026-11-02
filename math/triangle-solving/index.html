@@ -29,9 +29,9 @@ main{max-width:1160px;margin:auto;padding:24px 18px 70px}h1,h2,h3{color:#122b5b}
 <script>
 'use strict';
 
-function mathHTML(tex){
+function mathHTML(tex,fallback=tex){
  const esc=x=>String(x).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
- return '<span class="math-tex" data-tex="'+esc(tex)+'">'+esc(tex)+'</span>';
+ return '<span class="math-tex" data-tex="'+esc(tex)+'">'+esc(fallback)+'</span>';
 }
 function renderMath(root=document){
  if(typeof katex==='undefined')return;
@@ -161,7 +161,7 @@ function paintTheory(){
  q('theoryDrawing').innerHTML=triangleSVG(item.given,steps.slice(0,theoryStep).map(t=>t.target),steps[theoryStep].target);
  q('theoryPosition').textContent='Крок '+(theoryStep+1)+' із '+steps.length;
  q('theoryPrev').disabled=theoryStep===0;q('theoryNext').disabled=theoryStep===steps.length-1;
- q('theorySteps').innerHTML=steps.map((s,i)=>'<div class="stepcard" style="opacity:'+(i>theoryStep?'.55':'1')+'"><span class="stepnum">'+(i+1)+'</span><b>'+(['Знаходимо ','Визначаємо ','Обчислюємо '][Math.min(i,2)])+names[s.target]+'</b>'+(i<=theoryStep?'<div class="formula">'+mathHTML(theoryLatex[theoryIndex][i])+'</div><p class="note">'+s.note+'</p>':'<p class="note">Наступний крок ще не відкрито.</p>')+'</div>').join('');
+ q('theorySteps').innerHTML=steps.map((s,i)=>'<div class="stepcard" style="opacity:'+(i>theoryStep?'.55':'1')+'"><span class="stepnum">'+(i+1)+'</span><b>'+(['Знаходимо ','Визначаємо ','Обчислюємо '][Math.min(i,2)])+names[s.target]+'</b>'+(i<=theoryStep?'<div class="formula">'+mathHTML(theoryLatex[theoryIndex][i],s.formula)+'</div><p class="note">'+s.note+'</p>':'<p class="note">Наступний крок ще не відкрито.</p>')+'</div>').join('');
  q('theoryAlternatives').innerHTML='<b>Інший правильний шлях:</b> '+item.alt+'<div class="formula">'+mathHTML(alternativeLatex[theoryIndex])+'</div>';renderMath(q('theorySteps'));renderMath(q('theoryAlternatives'));
 }
 q('caseButtons').addEventListener('click',e=>{const btn=e.target.closest('[data-case]');if(btn){theoryIndex=Number(btn.dataset.case);theoryStep=0;paintTheory()}});
@@ -227,7 +227,7 @@ function triangleValidPartial(state,base,target,val){
 }
 function formulaDescription(step){
  const output=names[step.target]+' \\approx '+f(step.value).replace(',','{,}')+(step.target>=3?'^{\\circ}':'');
- return mathHTML(methodLatex(step.method,step.target,step.pair,step.value))+'<div>'+mathHTML(output)+'</div>';
+ return mathHTML(methodLatex(step.method,step.target,step.pair,step.value),step.expr)+'<div>'+mathHTML(output,names[step.target]+' ≈ '+f(step.value)+(step.target>=3?'°':''))+'</div>';
 }
 const getInput=()=>['a','b','c','alpha','beta','gamma'].map(id=>{let val=q(id).value.trim().replace(',','.');return val===''?null:Number(val)});
 function showSolutions(){
