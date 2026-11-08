@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Тригонометричні функції кута — 10 клас</title>
+<style>
+:root{color-scheme:light;--bg:#f5f7fb;--surface:#fff;--ink:#17263b;--muted:#64748b;--line:#dce3ee;--sin:#087e72;--cos:#245fd0;--tan:#b35314;--cot:#8d3fad;--highlight:#eaf2ff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink);line-height:1.55}
+header{background:#17263b;color:white;padding:30px max(18px,calc((100vw - 1080px)/2)) 24px}header p{max-width:700px;color:#d8e3f4}h1{font-size:clamp(1.6rem,4vw,2.5rem);line-height:1.2;margin:9px 0}h2{font-size:1.35rem;margin:0 0 12px}h3{font-size:1.02rem;margin:16px 0 8px}main{max-width:1080px;margin:auto;padding:20px 14px 65px}.card{background:var(--surface);border:1px solid var(--line);border-radius:17px;padding:clamp(15px,3vw,25px);margin-bottom:19px;box-shadow:0 2px 9px #1e365009}.muted,.small{color:var(--muted)}.small{font-size:.88rem}.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}.canvaswrap{background:#fcfdff;border:1px solid var(--line);border-radius:12px;overflow:hidden}.canvaswrap canvas{display:block;width:100%;height:auto;touch-action:pan-y}.controls{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:12px 0}.btn{background:#fff;color:var(--ink);border:1px solid #b9c6d7;border-radius:9px;padding:8px 12px;font:inherit;cursor:pointer}.btn:hover{background:var(--highlight)}.btn.primary{background:#1d4d94;color:white;border-color:#1d4d94}label.check{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:9px;padding:8px 12px;cursor:pointer}label.check input{width:17px;height:17px;accent-color:#255fa8}.sliderline{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.sliderline input{flex:1;min-width:180px;accent-color:#245fd0}.values{display:flex;flex-wrap:wrap;gap:9px;margin:10px 0}.values .val{max-width:100%;overflow-wrap:anywhere}.unit-exact{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}.unit-exact .val{flex:1 1 220px}.unit-exact b{white-space:normal}.value-root{white-space:nowrap}.unit-help{margin:5px 0 9px}.val{background:#f3f6fb;border-radius:9px;padding:8px 12px;font-variant-numeric:tabular-nums}.formula{padding:10px;background:#f0f5fc;border-radius:9px;font-size:1.07rem}.key{font-weight:700}.sin{color:var(--sin)}.cos{color:var(--cos)}.tan{color:var(--tan)}.cot{color:var(--cot)}.chip{font-size:.85rem;color:#d7e8ff;border:1px solid #6580a0;border-radius:15px;padding:2px 9px}nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}nav a{color:white;text-decoration:none;border-bottom:1px solid #c0d4f0}details{margin-top:9px}summary{cursor:pointer;font-weight:600}.note{border-left:3px solid #3671bb;padding:9px 13px;background:#f0f5fc;margin-top:12px}.theory{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.theory div{background:#f6f8fc;border:1px solid var(--line);padding:9px;border-radius:8px}.footer{font-size:.9rem;color:var(--muted);margin-top:18px}.signcircles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px;text-align:center}.signcircles>div{border:1px solid var(--line);border-radius:12px;padding:8px}.signcircles canvas{width:100%;max-width:180px;height:auto;display:block;margin:auto}select{font:inherit;border:1px solid #b9c6d7;border-radius:8px;padding:8px;background:white;color:var(--ink)}.pill{display:inline-block;border-radius:999px;background:#eaf2ff;color:#24528b;padding:2px 10px;font-size:.85rem}
+@media(max-width:760px){.grid{grid-template-columns:1fr}header{padding:24px 16px}.theory{grid-template-columns:1fr}.card{padding:15px}.values{font-size:.9rem}}
+</style>
+</head>
+<body>
+<header><span class="chip">10 клас · Алгебра</span><h1>Тригонометричні функції кута</h1><p>Від прямокутного трикутника до одиничного кола й графіків синуса, косинуса, тангенса та котангенса.</p><nav><a href="#triangle">Трикутник</a><a href="#circle">Одиничне коло</a><a href="#graphs">Графіки</a></nav></header>
+<main>
+<section class="card" id="triangle"><h2>Повторюємо означення в прямокутному трикутнику</h2><p>Відносно гострого кута <b>α</b> катет може бути протилежним або прилеглим. Гіпотенуза лежить навпроти прямого кута.</p><div class="grid"><div class="canvaswrap"><canvas id="triangleCanvas" width="520" height="325" aria-label="Прямокутний трикутник із позначеними сторонами та кутом альфа"></canvas></div><div><div class="theory"><div><b class="sin">sin α</b> = протилежний катет / гіпотенуза</div><div><b class="cos">cos α</b> = прилеглий катет / гіпотенуза</div><div><b class="tan">tg α</b> = протилежний / прилеглий</div><div><b class="cot">ctg α</b> = прилеглий / протилежний</div></div><h3>Перевір себе</h3><p>Яке відношення відповідає синусу кута α?</p><div class="controls"><button class="btn" data-tri-answer="wrong">AC / BC</button><button class="btn" data-tri-answer="right">BC / AB</button><button class="btn" data-tri-answer="wrong">AC / AB</button></div><p id="triFeedback" class="small" role="status">Обери відповідь. У трикутнику кут B прямий, α — кут A.</p><div class="note">Ці означення стосуються гострих кутів прямокутного трикутника. Для довільних кутів переходимо до одиничного кола.</div></div></div></section>
+<section class="card" id="circle"><h2>Розширюємо означення: одиничне коло</h2><p>Точці P на одиничному колі відповідають координати <b>P(cos α; sin α)</b>. Додатний напрямок відліку кута — проти годинникової стрілки.</p><div class="grid"><div class="canvaswrap"><canvas id="unitCanvas" width="600" height="540" aria-label="Одиничне коло від нуля до трьохсот шістдесяти градусів"></canvas></div><div><div class="sliderline"><label for="unitAngle"><b>Кут α</b></label><input type="range" id="unitAngle" min="0" max="360" step="1" value="45"><output id="unitDeg">45°</output></div><div class="controls" id="unitPresets" aria-label="Характерні кути"></div><div class="values unit-exact"><span class="val sin">sin α <b id="unitSin"></b></span><span class="val cos">cos α <b id="unitCos"></b></span><span class="val tan" id="unitTanVal" hidden>tg α <b id="unitTanText"></b></span><span class="val cot" id="unitCotVal" hidden>ctg α <b id="unitCotText"></b></span></div><div class="controls"><label class="check"><input id="unitTan" type="checkbox"><span class="tan">Показати тангенс</span></label><label class="check"><input id="unitCot" type="checkbox"><span class="cot">Показати котангенс</span></label></div><p class="small unit-help">Помаранчева пряма проходить через O та P. Тангенс визначає відрізок на дотичній x = 1, котангенс — на дотичній y = 1. У II–IV чвертях для перетину іноді потрібне продовження променя в протилежний бік.</p><p id="quadrant" class="formula"></p><div class="signcircles"><div><b class="sin">Знаки синуса</b><canvas id="sinSigns" width="240" height="240" aria-label="Знаки синуса в чотирьох чвертях"></canvas></div><div><b class="cos">Знаки косинуса</b><canvas id="cosSigns" width="240" height="240" aria-label="Знаки косинуса в чотирьох чвертях"></canvas></div></div><p class="small">На осях координат окремо визначаємо нульові значення. Кути 0° і 360° задають ту саму точку кола.</p></div></div></section>
+<section class="card" id="graphs"><h2>Спостерігаємо утворення графіків</h2><p>Ліворуч рухається точка по одиничному колу, праворуч поступово утворюються графіки на проміжку <b>0 ≤ α ≤ 2π</b>. Аргумент на графіках подано в радіанах, керування — у градусах.</p>
+<h3>Синус і косинус</h3><div class="controls"><label class="check"><input id="showSin" type="checkbox" checked><span class="sin">Синус</span></label><label class="check"><input id="showCos" type="checkbox"><span class="cos">Косинус</span></label><label class="check"><input id="showTrace1" type="checkbox" checked>Поступова побудова</label><label class="check"><input id="showPoint1" type="checkbox" checked>Рухомі точки</label></div><div class="canvaswrap"><canvas id="scCanvas" width="1020" height="380" aria-label="Одиничне коло й динамічна побудова синуса та косинуса"></canvas></div><div class="controls"><button id="scPlay" class="btn primary">▶ Відтворити</button><button id="scReset" class="btn">↺ На початок</button><label>Швидкість <select id="scSpeed" aria-label="Швидкість синуса й косинуса"><option value="0.5">Повільно</option><option value="1" selected>Середньо</option><option value="2">Швидко</option></select></label><label>Тривалість <select id="scPeriod" aria-label="Кількість обертів"><option value="360" selected>1 оберт (2π)</option><option value="720">2 оберти (4π)</option></select></label></div><div class="sliderline"><b>α</b><input id="scAngle" type="range" min="0" max="360" step="1" value="0"><output id="scDeg">0°</output></div><div class="values"><span class="val sin">sin α = <b id="scSin">0</b></span><span class="val cos">cos α = <b id="scCos">1</b></span></div>
+<h3>Тангенс і котангенс</h3><p>Для <span class="tan">тангенса</span> використовуємо дотичну <b>x = 1</b>, для <span class="cot">котангенса</span> — дотичну <b>y = 1</b>. Положення точок перетину відповідають значенням функцій.</p><div class="controls"><label class="check"><input id="showTan" type="checkbox" checked><span class="tan">Тангенс</span></label><label class="check"><input id="showCot" type="checkbox"><span class="cot">Котангенс</span></label><label class="check"><input id="showTrace2" type="checkbox" checked>Поступова побудова</label><label class="check"><input id="showPoint2" type="checkbox" checked>Рухомі точки</label></div><div class="canvaswrap"><canvas id="tcCanvas" width="1020" height="410" aria-label="Дотичні до одиничного кола й графіки тангенса та котангенса з асимптотами"></canvas></div><div class="controls"><button id="tcPlay" class="btn primary">▶ Відтворити</button><button id="tcReset" class="btn">↺ На початок</button><label>Швидкість <select id="tcSpeed" aria-label="Швидкість тангенса й котангенса"><option value="0.5">Повільно</option><option value="1" selected>Середньо</option><option value="2">Швидко</option></select></label></div><div class="sliderline"><b>α</b><input id="tcAngle" type="range" min="0" max="360" step="1" value="0"><output id="tcDeg">0°</output></div><div class="values"><span class="val tan">tg α = <b id="tcTan"></b></span><span class="val cot">ctg α = <b id="tcCot"></b></span></div><p class="small">Вертикальна шкала графіків обмежена від −5 до 5 лише для наочності; область значень обох функцій — усі дійсні числа. Штрихові лінії — вертикальні асимптоти. Графік ніколи не з'єднується через розрив.</p><div class="note"><b>Область визначення:</b> tg α не існує при α = π/2 + πk; ctg α не існує при α = πk, де k — ціле число.</div></section>
+<p class="footer">Навчальна сторінка · Версія 1.3 · Працює автономно в браузері без інтернету. Наступні теми про рівняння та нерівності передбачені як окремі сторінки.</p>
+</main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id),pi=Math.PI,rad=d=>d*pi/180;
+const C={ink:'#17263b',muted:'#738297',grid:'#e4eaf2',sin:'#087e72',cos:'#245fd0',tan:'#b35314',cot:'#8d3fad',orange:'#e09929'};
+function fmt(v){if(v===null||!Number.isFinite(v))return 'не існує';if(Math.abs(v)<0.0005)v=0;return v.toFixed(3).replace('.',',')}
+function ctxOf(id){return $(id).getContext('2d')}
+function ln(c,x1,y1,x2,y2,color=C.grid,w=1,dash=[]){c.save();c.strokeStyle=color;c.lineWidth=w;c.setLineDash(dash);c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();c.restore()}
+function text(c,t,x,y,color=C.ink,size=15,align='left'){c.save();c.fillStyle=color;c.font=`${size}px system-ui, sans-serif`;c.textAlign=align;c.fillText(t,x,y);c.restore()}
+function dot(c,x,y,color,r=5){c.beginPath();c.arc(x,y,r,0,2*pi);c.fillStyle=color;c.fill()}
+function circle(c,x,y,r){c.beginPath();c.arc(x,y,r,0,2*pi);c.strokeStyle=C.muted;c.lineWidth=1.7;c.stroke()}
+function arrow(c,x1,y1,x2,y2,col){ln(c,x1,y1,x2,y2,col,1.5);const a=Math.atan2(y2-y1,x2-x1);[a+2.6,a-2.6].forEach(b=>ln(c,x2,y2,x2+8*Math.cos(b),y2+8*Math.sin(b),col,1.5))}
+function drawTriangle(){const c=ctxOf('triangleCanvas');c.clearRect(0,0,520,325);const A=[70,252],B=[425,252],D=[425,61];ln(c,...A,...B,C.ink,3);ln(c,...B,...D,C.ink,3);ln(c,...D,...A,C.ink,3);ln(c,408,252,408,235,C.muted);ln(c,408,235,425,235,C.muted);c.beginPath();c.arc(A[0],A[1],48,-Math.atan2(191,355),0);c.strokeStyle=C.orange;c.lineWidth=2;c.stroke();text(c,'α',125,238,C.orange,19);text(c,'A',52,273,C.ink,17);text(c,'B',437,273,C.ink,17);text(c,'C',437,56,C.ink,17);text(c,'AB — прилеглий',175,280,C.cos,16);text(c,'BC — протилежний',433,164,C.sin,15,'right');text(c,'AC — гіпотенуза',155,142,C.ink,16)}
+// Triangle: vertices A left, B right bottom, C right top, alpha at A; AB adjacent, BC opposite, AC hypotenuse.
+// Correct the top explanatory label to maintain consistent definitions.
+drawTriangle();
+
+for(const b of document.querySelectorAll('[data-tri-answer]'))b.addEventListener('click',()=>{$('triFeedback').textContent=b.dataset.triAnswer==='right'?'Правильно: sin α = BC / AC (протилежний катет / гіпотенуза).':'Спробуй ще раз: синус — це протилежний катет, поділений на гіпотенузу.'});
+// Fix answer options using actual side labels A-B-C.
+const triBtns=[...document.querySelectorAll('[data-tri-answer]')];triBtns[0].textContent='AB / AC';triBtns[1].textContent='BC / AC';triBtns[2].textContent='BC / AB';
+let ua=45, presetSelected=true;
+const angles=[0,30,45,60,90,120,135,150,180,210,225,240,270,300,315,330,360];
+// Exact reference values are presented alongside rounded decimals.
+function exactTrig(deg,kind){
+ const d=((deg%360)+360)%360;
+ const basic={0:['0','1'],30:['1/2','√3/2'],45:['√2/2','√2/2'],60:['√3/2','1/2'],90:['1','0']};
+ const acute=d<=90?d:d<=180?180-d:d<=270?d-180:360-d;
+ const pair=basic[acute]||['',''];
+ let val=pair[kind==='sin'?0:1];
+ const negative=kind==='sin'?(d>180):(d>90&&d<270);
+ return (negative&&val!=='0'?'−':'')+val;
+}
+function exactRatio(deg,kind){
+ const d=((deg%360)+360)%360;
+ // Знаки визначаємо за чвертю; 0° і 360° еквівалентні.
+ if(kind==='tan' && (d===90||d===270)) return null;
+ if(kind==='cot' && (d===0||d===180)) return null;
+ const a=rad(d), numerator=kind==='tan'?Math.sin(a):Math.cos(a);
+ if(Math.abs(numerator)<1e-9)return '0';
+ const acute=d<=90?d:d<=180?180-d:d<=270?d-180:360-d;
+ const bases={0:['0',null],30:['√3/3','√3'],45:['1','1'],60:['√3','√3/3'],90:[null,'0']};
+ const base=bases[acute]?.[kind==='tan'?0:1];
+ if(!base)return null;
+ const negative=(d>90&&d<180)||(d>270&&d<360);
+ return (negative?'−':'')+base;
+}
+function unitValue(deg,kind,v,defined=true){
+ if(!defined)return '= не існує';
+ const exact=presetSelected?(kind==='sin'||kind==='cos'?exactTrig(deg,kind):exactRatio(deg,kind)):null;
+ if(!exact)return `≈ ${fmt(v)}`;
+ // Цілі табличні значення точні; десяткове подання половини теж точне.
+ if(exact==='0'||exact==='1'||exact==='−1')return `= <span class="value-root">${exact}</span>`;
+ if(exact==='1/2'||exact==='−1/2')return `= <span class="value-root">${exact}</span> = ${exact.startsWith('−')?'−':''}0,5`;
+ // Ірраціональні табличні значення: точний вираз та наближення.
+ return `= <span class="value-root">${exact}</span> ≈ ${fmt(v)}`;
+}
+$('unitPresets').innerHTML=angles.map(d=>`<button class="btn" data-unit="${d}">${d}°</button>`).join('');
+function signCanvas(id,fn,color){const c=ctxOf(id),cx=120,cy=120,r=76;c.clearRect(0,0,240,240);circle(c,cx,cy,r);ln(c,18,cy,222,cy,C.muted,1.1);ln(c,cx,18,cx,222,C.muted,1.1);[[1,-1],[-1,-1],[-1,1],[1,1]].forEach(([sx,sy])=>{const q=(sx>0?(sy<0?1:4):(sy<0?2:3)),v=fn(q)?'+':'−';text(c,v,cx+sx*39,cy+sy*39,color,32,'center')});text(c,'x',222,112,C.muted,12);text(c,'y',128,18,C.muted,12)}
+signCanvas('sinSigns',q=>q===1||q===2,C.sin);
+signCanvas('cosSigns',q=>q===1||q===4,C.cos);
+function drawUnit(){
+const c=ctxOf('unitCanvas');c.clearRect(0,0,600,540);
+const x0=300,y0=270,R=150,a=rad(ua),co=Math.cos(a),si=Math.sin(a);
+arrow(c,50,y0,550,y0,C.muted);arrow(c,x0,508,x0,28,C.muted);circle(c,x0,y0,R);
+text(c,'x',556,y0-8,C.ink);text(c,'y',x0+10,23,C.ink);text(c,'O',x0-18,y0+18,C.muted);
+const tags=[[1,'I чверть',458,43],[2,'II чверть',144,43],[3,'III чверть',144,519],[4,'IV чверть',458,519]];
+tags.forEach(([,t,x,y])=>text(c,t,x,y,C.muted,15,'center'));
+// Характерні кути: короткі риски на колі та підписи за межами кола.
+angles.slice(0,-1).forEach(d=>{const t=rad(d),vx=Math.cos(t),vy=Math.sin(t);ln(c,x0+(R-5)*vx,y0-(R-5)*vy,x0+(R+6)*vx,y0-(R+6)*vy,C.muted,1.1);const rr=R+25;const xx=x0+rr*vx,yy=y0-rr*vy;const label=d+'°';text(c,label,xx,yy+4,d===ua||ua===360&&d===0?C.orange:C.muted,12,'center')});
+const px=x0+R*co,py=y0-R*si;
+const ut=$('unitTan').checked,uc=$('unitCot').checked;
+// Tangent geometry: signed lengths along the tangent lines. Clip only the
+// rendering, never the mathematical values (which can be unbounded).
+if(ut||uc){
+ c.save();c.beginPath();c.rect(22,22,556,496);c.clip();
+ if(ut)ln(c,x0+R,30,x0+R,510,C.tan,1.8,[6,5]);
+ if(uc)ln(c,35,y0-R,565,y0-R,C.cot,1.8,[6,5]);
+ // A full supporting line is required for negative tangent/cotangent values.
+ const len=950;ln(c,x0-len*co,y0+len*si,x0+len*co,y0-len*si,C.orange,1.8,[7,5]);
+ if(ut&&Math.abs(co)>1e-9){
+   const ty=y0-R*si/co;
+   ln(c,x0+R,y0,x0+R,ty,C.tan,5);
+   if(ty>=22&&ty<=518)dot(c,x0+R,ty,C.tan,6);
+   dot(c,x0+R,y0,C.tan,4);
+ }
+ if(uc&&Math.abs(si)>1e-9){
+   const tx=x0+R*co/si;
+   ln(c,x0,y0-R,tx,y0-R,C.cot,5);
+   if(tx>=22&&tx<=578)dot(c,tx,y0-R,C.cot,6);
+   dot(c,x0,y0-R,C.cot,4);
+ }
+ c.restore();
+}
+// Жирні відрізки на обох осях показують косинус і синус. Пунктирні проєкції замикають прямокутник.
+ln(c,x0,y0,px,y0,C.cos,5);ln(c,x0,y0,x0,py,C.sin,5);
+ln(c,px,py,px,y0,C.sin,2,[6,5]);ln(c,px,py,x0,py,C.cos,2,[6,5]);
+ln(c,x0,y0,px,py,C.orange,3);dot(c,px,py,C.orange,7);dot(c,px,y0,C.cos,6);dot(c,x0,py,C.sin,6);
+text(c,'P',px+10,py-9,C.orange,17);
+text(c,'cos α',x0+(px-x0)/2,y0+25,C.cos,15,'center');
+text(c,'sin α',x0-12,y0+(py-y0)/2,C.sin,15,'right');
+$('unitDeg').textContent=ua+'°';$('unitSin').innerHTML=unitValue(ua,'sin',si);$('unitCos').innerHTML=unitValue(ua,'cos',co);$('unitTanVal').hidden=!ut;$('unitCotVal').hidden=!uc;$('unitTanText').innerHTML=unitValue(ua,'tan',si/co,Math.abs(co)>=1e-9);$('unitCotText').innerHTML=unitValue(ua,'cot',co/si,Math.abs(si)>=1e-9);
+let q=(ua%90===0)?'На координатній осі':ua<90?'I чверть':ua<180?'II чверть':ua<270?'III чверть':'IV чверть';$('quadrant').textContent=q;
+}
+$('unitAngle').addEventListener('input',e=>{ua=+e.target.value;presetSelected=false;drawUnit()});$('unitTan').addEventListener('change',drawUnit);$('unitCot').addEventListener('change',drawUnit);
+document.querySelectorAll('[data-unit]').forEach(b=>b.addEventListener('click',()=>{ua=+b.dataset.unit;presetSelected=true;$('unitAngle').value=ua;drawUnit()}));drawUnit();
+function plotFrame(c,kind,deg,opts){
+ const W=1020,H=kind==='sc'?380:410;
+ c.clearRect(0,0,W,H);
+ const R=117,cx=161,cy=185,gx=370,gy=195,gw=604,period=opts.period||360;
+ const scale=kind==='sc'?116:27,ytop=kind==='sc'?52:54,ybottom=kind==='sc'?328:335;
+ text(c,'Одиничне коло',cx,28,C.ink,17,'center');text(c,'Графіки функцій',gx+gw/2,28,C.ink,17,'center');
+ arrow(c,25,cy,308,cy,C.muted);arrow(c,cx,344,cx,43,C.muted);circle(c,cx,cy,R);
+ text(c,'x',306,cy-10,C.muted);text(c,'y',cx+10,43,C.muted);
+ const a=rad(deg),co=Math.cos(a),si=Math.sin(a),px=cx+R*co,py=cy-R*si;
+ // Projection values are the thick segments ON the axes; dotted lines lead to the moving point.
+ if(kind==='sc'){
+   if(opts.sin){ln(c,cx,cy,cx,py,C.sin,5);ln(c,cx,py,px,py,C.sin,2,[5,4]);dot(c,cx,py,C.sin,5.5)}
+   if(opts.cos){ln(c,cx,cy,px,cy,C.cos,5);ln(c,px,cy,px,py,C.cos,2,[5,4]);dot(c,px,cy,C.cos,5.5)}
+ }
+ if(kind==='tc'){
+   // Tangent lines are x=1 and y=1. The radial line (extended in both directions)
+   // intersects them at (1,tan a) and (cot a,1), respectively.
+   if(opts.tan)ln(c,cx+R,ytop,cx+R,ybottom,C.tan,1.7,[6,5]);
+   if(opts.cot)ln(c,25,cy-R,307,cy-R,C.cot,1.7,[6,5]);
+   const validTan=Math.abs(co)>1e-8,validCot=Math.abs(si)>1e-8;
+   const ty=validTan?cy-R*(si/co):NaN, tx=validCot?cx+R*(co/si):NaN;
+   // Draw the whole line through the origin and P, clipped to the circle diagram.
+   // Slanted lines show geometric construction without misleadingly limiting it to a ray.
+   c.save();c.beginPath();c.rect(23,ytop,285,ybottom-ytop);c.clip();
+   let length=900;
+   ln(c,cx-length*co,cy+length*si,cx+length*co,cy-length*si,C.orange,1.7,[7,4]);
+   c.restore();
+   // Signed directed segments on the tangents provide the actual function values.
+   c.save();c.beginPath();c.rect(23,ytop,285,ybottom-ytop);c.clip();
+   if(opts.tan&&validTan){ln(c,cx+R,cy,cx+R,ty,C.tan,5);if(ty>=ytop&&ty<=ybottom)dot(c,cx+R,ty,C.tan,6)}
+   if(opts.cot&&validCot){ln(c,cx,cy-R,tx,cy-R,C.cot,5);if(tx>=23&&tx<=308)dot(c,tx,cy-R,C.cot,6)}
+   c.restore();
+ }
+ // The moving point is always displayed on the unit circle.
+ ln(c,cx,cy,px,py,C.orange,2.5);dot(c,px,py,C.orange,6);
+ arrow(c,gx-4,gy,gx+gw+20,gy,C.muted);arrow(c,gx,ybottom+8,gx,ytop-12,C.muted);
+ for(let i=0;i<=4;i++){
+   const x=gx+i*gw/4;ln(c,x,ytop,x,ybottom,C.grid,1,[3,5]);
+   text(c,(period===720?['0','π','2π','3π','4π']:['0','π/2','π','3π/2','2π'])[i],x,ybottom+24,C.muted,14,'center');
+ }
+ (kind==='sc'?[-1,0,1]:[-5,0,5]).forEach(v=>{
+   const y=gy-v*scale;ln(c,gx,y,gx+gw,y,C.grid,.7);text(c,v.toString(),gx-12,y+5,C.muted,13,'right');
+ });
+ if(kind==='tc'){
+   const markers=[];
+   if(opts.tan)[90,270].forEach(v=>markers.push([v,C.tan]));
+   if(opts.cot)[0,180,360].forEach(v=>markers.push([v,C.cot]));
+   markers.forEach(([d,color])=>{const x=gx+gw*d/360;ln(c,x,ytop,x,ybottom,color,1.4,[7,5]);});
+   // Open circles are marked ON THE ANGLE AXIS at undefined argument values.
+   // For overlapping markers, slightly larger ring on the outside distinguishes colors.
+   markers.forEach(([d,color])=>{const x=gx+gw*d/360;c.save();c.beginPath();c.arc(x,gy,6,0,2*pi);c.fillStyle='#fcfdff';c.fill();c.strokeStyle=color;c.lineWidth=2.6;c.stroke();c.restore()});
+ }
+ const max=opts.trace?deg:period;
+ function drawCurve(color,fun,asymptotes){
+   c.save();c.beginPath();c.rect(gx,ytop,gw,ybottom-ytop);c.clip();
+   c.strokeStyle=color;c.lineWidth=2.8;
+   // Draw each continuous component separately so opposite sides of an asymptote
+   // are never joined, including after a clipped segment.
+   const cuts=[0,...asymptotes.filter(v=>v>0&&v<period),period];
+   for(let k=0;k<cuts.length-1;k++){
+     const lo=cuts[k],hi=Math.min(cuts[k+1],max);
+     if(hi<=lo)continue;
+     const step=.18;
+     c.beginPath();let drawing=false;
+     for(let d=lo+.002;d<=hi+.00001;d+=step){
+       const val=fun(rad(d)),x=gx+gw*d/period,y=gy-scale*val;
+       if(!Number.isFinite(y)||y<ytop-1||y>ybottom+1){drawing=false;continue}
+       if(!drawing){c.moveTo(x,y);drawing=true}else c.lineTo(x,y);
+     }
+     c.stroke();
+   }
+   c.restore();
+   const val=fun(a),y=gy-scale*val,x=gx+gw*deg/period;
+   if(opts.point&&Number.isFinite(val)&&y>=ytop&&y<=ybottom){dot(c,x,y,color,5);ln(c,x,y,x,gy,color,1,[3,4])}
+ }
+ if(kind==='sc'){
+   if(opts.sin)drawCurve(C.sin,Math.sin,[]);
+   if(opts.cos)drawCurve(C.cos,Math.cos,[]);
+ }else{
+   if(opts.tan)drawCurve(C.tan,r=>Math.abs(Math.cos(r))<1e-9?NaN:Math.tan(r),[90,270]);
+   if(opts.cot)drawCurve(C.cot,r=>Math.abs(Math.sin(r))<1e-9?NaN:Math.cos(r)/Math.sin(r),[180]);
+ }
+}
+function app(prefix,kind){const st={deg:0,playing:false,last:0};const canvas=ctxOf(prefix+'Canvas'),angle=$(prefix+'Angle'),play=$(prefix+'Play');const options=()=>({period:kind==='sc'?+$('scPeriod').value:360,sin:$('showSin').checked,cos:$('showCos').checked,tan:$('showTan').checked,cot:$('showCot').checked,trace:$(kind==='sc'?'showTrace1':'showTrace2').checked,point:$(kind==='sc'?'showPoint1':'showPoint2').checked});const redraw=()=>{plotFrame(canvas,kind,st.deg,options());angle.value=st.deg;$((prefix)+'Deg').textContent=Math.round(st.deg)+'°';const a=rad(st.deg);if(kind==='sc'){$('scSin').textContent=fmt(Math.sin(a));$('scCos').textContent=fmt(Math.cos(a))}else{$('tcTan').textContent=Math.abs(Math.cos(a))<1e-9?'не існує':fmt(Math.tan(a));$('tcCot').textContent=Math.abs(Math.sin(a))<1e-9?'не існує':fmt(Math.cos(a)/Math.sin(a))}};function stop(){st.playing=false;st.last=0;play.textContent='▶ Відтворити'}play.addEventListener('click',()=>{st.playing=!st.playing;st.last=0;play.textContent=st.playing?'Ⅱ Пауза':'▶ Відтворити'});$(prefix+'Reset').addEventListener('click',()=>{stop();st.deg=0;redraw()});angle.addEventListener('input',()=>{stop();st.deg=+angle.value;redraw()});const ids=kind==='sc'?['showSin','showCos','showTrace1','showPoint1','scPeriod']:['showTan','showCot','showTrace2','showPoint2'];ids.forEach(id=>$(id).addEventListener('change',()=>{if(id==='scPeriod'){angle.max=$('scPeriod').value;st.deg=Math.min(st.deg,+angle.max);stop()}redraw()}));function tick(t){if(st.playing){if(st.last){const limit=kind==='sc'?+$('scPeriod').value:360;st.deg=Math.min(limit,st.deg+(t-st.last)*.018*+$(prefix+'Speed').value);if(st.deg>=limit){st.deg=limit;stop()}redraw()}st.last=t}requestAnimationFrame(tick)}redraw();requestAnimationFrame(tick)}app('sc','sc');app('tc','tc');
+})();
+</script>
+</body></html>
